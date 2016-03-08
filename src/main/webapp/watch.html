@@ -7,6 +7,30 @@
 <link rel="stylesheet" href="css/watch.css">
 </head>
 <body>
-  <h1>hello</h1>
+<div class="nav navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">いんこかめら</a>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="video-container"><video class="watch"></video></div>
+    <button class="btn btn-default btn-block fullscreen">全画面</button>
+  </div>
+  <div class="row">
+    <table class="table">
+      <thead class="sdp-head">
+        <tr><th>接続先情報</th></tr>
+      </thead>
+      <tbody class="sdp">
+        <tr><td class="sdp-record"><textarea class="form-control sdp-data" rows="5" readonly></textarea></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script type="text/javascript" src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="js/watch.js"></script>
 </body>
 </html>
