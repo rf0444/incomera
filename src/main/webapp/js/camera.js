@@ -49,4 +49,9 @@ $(function() {
 			});
 		}
 	});
+	$("button.fullscreen").on("click", function() {
+		var el = videoEl.get(0);
+		var request = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen;
+		request.bind(el)();
+	});
 });

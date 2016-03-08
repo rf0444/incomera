@@ -8,7 +8,6 @@ $(function() {
 	var con = new RTCPeerConnection({ "iceServers": [] });
 	var cid = location.search.substring(1);
 	con.addEventListener("addstream", function(e) {
-		console.log(e);
 		var url = window.URL.createObjectURL(e.stream);
 		videoEl.each(function(i, dom) {
 			dom.src = url;
@@ -31,5 +30,10 @@ $(function() {
 		});
 	}).then(function(sdp) {
 		sdpEl.val(sdp);
+	});
+	$("button.fullscreen").on("click", function() {
+		var el = videoEl.get(0);
+		var request = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen;
+		request.bind(el)();
 	});
 });
