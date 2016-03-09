@@ -29,17 +29,60 @@ $(function() {
 			}, reject);
 		});
 	});
-	var cid = null;
 	sdpP.then(function(sdp) {
 		selfSdpEl.val(sdp);
-		$.ajax({
-			method: "POST",
-			url: "/sdps",
-			data: sdp,
-			contentType: false
-		}).then(function(x) {
-			cid = x.id;
+	});
+	var postedP = sdpP.then(function(sdp) {
+		return new Promise(function(resolve, reject) {
+			$.ajax({
+				method: "POST",
+				url: "/sdps",
+				data: sdp,
+				contentType: false
+			}).then(resolve, reject);
 		});
+	});
+	var cid = null;
+	postedP.then(function(x) {
+		cid = x.id;
+	});
+	var addRemote = function(sdp) {
+		var answer = new RTCSessionDescription({ type: "answer", sdp: sdp });
+		con.setRemoteDescription(answer, function() {}, function() {});
+	};
+	var updateSdpsEl = function(ws) {
+		sdpsEl.empty().append(
+			ws.map(function(w) {
+				var d = new Date(w.time);
+				return $("<tr class='sdp-record'></tr>")
+					.append($("<td></td>")
+						.text(d.toLocaleString() + "." + d.getMilliseconds())
+					)
+					.append($("<td></td>")
+						.append($("<textarea class='form-control' rows='3' readonly></textarea>").val(w.sdp))
+					)
+				;
+			})
+		);
+	};
+	var watchers = [];
+	postedP.then(function(x) {
+		setInterval(function() {
+			$.get("/sdps/" + x.id).then(function(data) {
+				var news = data.watchers.filter(function(nw) {
+					return watchers.every(function(ow) { return nw.id != ow.id; });
+				});
+				if (news.length != 0) {
+					news.forEach(function(x) {
+						addRemote(x.sdp);
+					});
+				}
+				if (news.length != 0 || data.watchers.length != watchers.length) {
+					updateSdpsEl(data.watchers);
+				}
+				watchers = data.watchers;
+			});
+		}, 3000);
 	});
 	$(window).on("beforeunload", function() {
 		if (cid != null) {
