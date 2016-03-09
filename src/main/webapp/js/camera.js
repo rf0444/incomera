@@ -54,4 +54,5 @@ $(function() {
 		var request = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen;
 		request.bind(el)();
 	});
+	window.con = con;
 });

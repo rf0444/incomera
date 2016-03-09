@@ -24,16 +24,32 @@ $(function() {
 		$.get("/sdps/" + cid).then(function(x) { resolve(x.sdp); }, reject);
 	});
 	sdpP.then(function(sdp) {
+		sdpEl.val(sdp);
+	});
+	var selfSdpP = sdpP.then(function(sdp) {
 		var offer = new RTCSessionDescription({ type: 'offer', sdp: sdp });
 		return new Promise(function(resolve, reject) {
-			con.setRemoteDescription(offer, function() { resolve(sdp); }, reject);
+			con.setRemoteDescription(offer, function() { resolve(); }, reject);
 		});
-	}).then(function(sdp) {
-		sdpEl.val(sdp);
+	}).then(function() {
+		return new Promise(function(resolve, reject) {
+			con.addEventListener("icecandidate", function (e) {
+				if (!e.candidate) {
+					resolve(con.localDescription.sdp);
+				}
+			});
+			con.createAnswer(function(desc) {
+				con.setLocalDescription(desc, function() {}, reject);
+			}, reject);
+		});
+	});
+	selfSdpP.then(function(sdp) {
+		selfSdpEl.val(sdp);
 	});
 	$("button.fullscreen").on("click", function() {
 		var el = videoEl.get(0);
 		var request = el.requestFullScreen || el.mozRequestFullScreen || el.webkitRequestFullScreen;
 		request.bind(el)();
 	});
+	window.con = con;
 });
