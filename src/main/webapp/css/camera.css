@@ -1,6 +1,13 @@
+.camera-select-row > select.camera-select {
+	width: 300px;
+}
+.video-row, .connection-info-row {
+	display: none;
+}
 .video-container {
 	text-align: center;
 }
 video.rec {
-	width: 100%;
+	max-width: 100%;
+	max-height: 600px;
 }

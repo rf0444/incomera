@@ -4,12 +4,46 @@ RTCSessionDescription = window.RTCSessionDescription || window.webkitRTCSessionD
 $(function() {
 	var sdpsEl = $("tbody.sdps");
 	var selfSdpEl = $(".self-sdp-data");
+	var videoRowEl = $(".video-row");
 	var videoEl = $("video.rec");
+	var cameraSelectRowEl = $(".camera-select-row");
+	var cameraSelectEl = $(".camera-select");
+	var connectButtonEl = $(".connect");
+	var connectionInfoRow = $(".connection-info-row");
 	var con = new RTCPeerConnection({ "iceServers": [] });
-	var streamP = new Promise(function(resolve, reject) {
-		navigator.getUserMedia({ video: true, audio: true }, resolve, reject);
+	navigator.mediaDevices.enumerateDevices().then(function(ds) {
+		var vs = ds.filter(function(d) { return d.kind == "videoinput"; });
+		console.log(vs);
+		cameraSelectEl.empty()
+			.append(
+				vs.map(function(v) {
+					return $("<option></option>").val(v.deviceId).text(v.label);
+				})
+			)
+		;
 	});
+	var streamP = new Promise(function(resolve, reject) {
+		connectButtonEl.on("click", function() {
+			var deviceId = cameraSelectEl.val();
+			if (!deviceId) {
+				alert("使うカメラを選んでくれ。");
+			} else {
+				var opt = {
+					video: {
+						optional: [
+							{ sourceId: deviceId }
+						]
+					},
+					audio: true
+				};
+				navigator.getUserMedia(opt, resolve, reject);
+			}
+		});
+	})
 	streamP.then(function(stream) {
+		cameraSelectRowEl.remove();
+		videoRowEl.show();
+		connectionInfoRow.show();
 		var url = window.URL.createObjectURL(stream);
 		videoEl.each(function(i, dom) {
 			dom.src = url;
