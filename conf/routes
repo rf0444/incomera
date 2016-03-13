@@ -1,0 +1,7 @@
+GET /camera             controllers.Camera.socket
+
+GET /watches            controllers.Watches.list
+GET /watches/:id/socket controllers.Watches.socket(id: String)
+
+GET /      controllers.Assets.at(path="/public", file="index.html")
+GET /*file controllers.Assets.at(path="/public", file)

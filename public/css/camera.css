@@ -1,7 +1,7 @@
 .camera-select-row > select.camera-select {
 	width: 300px;
 }
-.video-row, .connection-info-row {
+.video-row {
 	display: none;
 }
 .video-container {
